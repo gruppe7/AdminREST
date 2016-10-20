@@ -1,10 +1,25 @@
 "use strict"
-var config = require('./config.js');
+var config = require('./config-release.js');
 var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser')
 var https = require('https');
+var http =require('http');
+
 var mysql = require('mysql');
+
+var pool = mysql.createPool(config.db.mysql);
+
+var bcrypt = require('bcrypt');
+
+var salt = bcrypt.genSaltSync(10);
+
+var UserHandler = require('./handlers/UserHandler.js');
+var LockerHandler = require('./handlers/LockerHandler.js');
+var EventHandler = require('./handlers/EventHandler.js');
+
+var routes = require('./routes.js');
+
 
 
 //HTTPS
@@ -14,68 +29,26 @@ var credentials = {key: privateKey, cert: certificate};
 
 var app = express();
 
-var pool = mysql.createPool(config.db.mysql);
-
-
-pool.getConnection(
-  function(err, connection){
-    connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
-      if (err) throw err;
-      console.log('The solution is: ', rows[0].solution);
-    })
-  });
+app.set('superSecret', config.secret);
 
 
 //Make app automatically parse json content
 app.use(bodyParser.json());
 
+var handlers = {
+  users: new UserHandler(),
+  lockers: new LockerHandler(),
+  events: new EventHandler(),
+};
 
+routes.setup(app, handlers);
 
+var httpServer= http.createServer(app);
+httpServer.listen(8443);
 
-function verifyUsername(username, callback){
-  var result=false;
-
-  var sql = "select * from Students where username=?";
-  var inserts = [username];
-  sql = mysql.format(sql, inserts);
-
-  pool.getConnection(function(err, connection){
-    connection.query(sql, function(err, rows){
-      if(rows.length==1){
-        console.log(true);
-        result=true;
-      }
-      callback(result);
-    })
-  });
-}
-
-
-
-//verify username
-app.get('/students/:username', (request, response) => {
-  console.log(request.params.username);
-  verifyUsername(request.params.username, function(result){
-    response.send(result);
-  });
-});
-
-
-
-//Add new customer if name and city contain data
-app.post('/customers', (request, response) => {
-  if(request.body.name && request.body.city) {
-    customers.push(new Customer(request.body.name, request.body.city));
-    response.send(customers[customers.length-1].id.toString());
-    return;
-  }
-  //Respond with bad request status code
-  response.sendStatus(400);
-});
-
-
-var httpsServer = https.createServer(credentials, app);
+/*var httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(8443, function(){
         console.log("server running at https://localhost:8443/")
 });
+*/
