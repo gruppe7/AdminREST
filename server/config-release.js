@@ -1,4 +1,5 @@
 module.exports = {
+  "secret":'hemmeligjsontoken',
   "db": {
 		"mysql": "mysql://gunnadal:3B3HcA5f@mysql.stud.iie.ntnu.no/gunnadal"
 	},
