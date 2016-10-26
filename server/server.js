@@ -17,6 +17,7 @@ var salt = bcrypt.genSaltSync(10);
 var UserHandler = require('./handlers/UserHandler.js');
 var LockerHandler = require('./handlers/LockerHandler.js');
 var EventHandler = require('./handlers/EventHandler.js');
+var StudentHandler = require('./handlers/StudentHandler.js');
 
 var routes = require('./routes.js');
 
@@ -39,6 +40,7 @@ var handlers = {
   users: new UserHandler(),
   lockers: new LockerHandler(),
   events: new EventHandler(),
+  students: new StudentHandler(),
 };
 
 routes.setup(app, handlers);
