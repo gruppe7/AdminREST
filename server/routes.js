@@ -3,6 +3,7 @@
 function setup(app, handlers) {
 
   app.get('/lockers/:semester', handlers.lockers.lockers);
+  //app.post('/lockers/:lockerId', handlers.lockers.reserve);
 
   app.post('/users/',handlers.users.login);
   app.get('/events/', handlers.events.events);
