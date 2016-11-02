@@ -1,5 +1,6 @@
 var mysql = require('promise-mysql');
 var config = require('../config-release.js');
+var input = require('../utils/input.js');
 
 var pool = mysql.createPool(config.db.mysql);
 
@@ -15,16 +16,31 @@ var StudentHandler = function() {
 };
 
 
+
 function newStudentRequest(req, res){
   var username=req.body.username || null;
   var firstname=req.body.firstname || null;
   var lastname=req.body.lastname || null;
   var studentCardId=req.body.studentCardId || null;
+  var year = req.body.year || null;
+  var studyId = req.body.studyId || null;
 
-  if(username==null || firstname==null || lastname==null){
-    res.json(400, 'username, firstname or lastname not submitted');
+
+
+  if(username==null || firstname==null || lastname==null || year==null || studyId==null){
+    res.json(400, {error:'username, firstname, lastname year or study not submitted'});
     return;
   }
+
+  if(!input.checkYear(year)){
+    res.json(400, {error:'year not submitted correctly'});
+    return;
+  }
+  if(!studyId === parseInt(studyId, 10)){
+    res.json(400, {error:'study not submitted correctly'});
+    return;
+  }
+
 
   var sql = "select * from Students where Students.username=?";
   var inserts = [username];
@@ -48,11 +64,9 @@ function newStudentRequest(req, res){
           if(rows.length==0){
 
             var token=tokens(16);
-            console.log(token);
 
-
-            sql="insert into Students (username, firstname, lastname, verifyingCode, studentCardId) values (?,?,?,?,?)";
-            inserts=[username, firstname, lastname, token, studentCardId];
+            sql="insert into Students (username, firstname, lastname, verifyingCode, studentCardId, year, studyId) values (?,?,?,?,?,?,?)";
+            inserts=[username, firstname, lastname, token, studentCardId, year, studyId];
             sql=mysql.format(sql, inserts);
             connection.query(sql).then(
               function (rows){
@@ -65,7 +79,7 @@ function newStudentRequest(req, res){
 
                 sendEmail(options)
                   .then(function(info){
-                    res.json(201, {username, firstname, lastname, studentCardId});
+                    res.json(201, {username, firstname, lastname, studentCardId, year, studyId});
                   })
                   .catch(function(err){
                     console.log(err);
@@ -73,7 +87,7 @@ function newStudentRequest(req, res){
                   });
               },
               function(err){
-                res.json(500, {error:'something went wrong while getting db connection'});
+                res.json(500, {error:'error while registering student'});
               }
             )
           }else{
@@ -139,8 +153,8 @@ function verifyStudentRequest(req, res){
       res.json(500, {error:'could not connect to database'});
     }
   );
-
 }
+
 
 
 

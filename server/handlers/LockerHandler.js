@@ -89,7 +89,7 @@ function reserveLockerRequest(req, res){
               inserts=[semester, username];
               sql=mysql.format(sql, inserts);
 
-              
+
 
               sql="insert into LockerRent (lockerId, username, semester, registered) values (?,?,?,NOW())";
               inserts=[lockerId, username, semester];
