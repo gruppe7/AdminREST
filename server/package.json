@@ -13,6 +13,7 @@
     "nodemailer-promise": "^1.0.3",
     "bcrypt": "^0.8.7",
     "jsonwebtoken": "^7.1.9",
-    "promise-mysql": "^3.1.0"
+    "promise-mysql": "^2.0.0",
+    "mysql":"^2.12.0"
   }
 }
