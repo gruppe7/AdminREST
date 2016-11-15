@@ -14,15 +14,16 @@ function setup(app, handlers) {
     else {
       next();
     }
-
   });
   app.get('/lockers/:semester', handlers.lockers.lockers);
   app.post('/users/',handlers.users.login);
   app.get('/events/', handlers.events.events);
   app.post('/students/', handlers.students.new);
-  app.get('/students/:username', handlers.students.verify);
+  app.post('/students/:username/updateCode/', handlers.students.updateCode);
+  app.put('/students/:username/update', handlers.students.update);
+  app.put('/students/:username', handlers.students.verify);
   app.use(handlers.users.token);
-
+  app.get('/students/', handlers.students.requestStudents);
 
 }
 
