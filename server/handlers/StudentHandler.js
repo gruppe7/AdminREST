@@ -77,7 +77,7 @@ function newStudentRequest(req, res){
                   subject:'STØH-registrering',
                   senderName:config.mailsender,
                   receiver:username+config.studmail,
-                  text:"Du er blitt registrert som student i Støh's systemer. Verifiser at du er student her: http://"+config.website+"/students/"+username+"?token="+token,
+                  text:"Du er blitt registrert som student i Støh's systemer. Verifiser at du er student her: http://"+config.website+"/students/?"+"username="+username+"&token="+token,
                 };
 
                 sendEmail(options)
@@ -189,7 +189,7 @@ function requestUpdateCode(req, res){
                   subject:'STØH-Studentinfo',
                   senderName:config.mailsender,
                   receiver:username+config.studmail,
-                  text:"Følg denne lenken for å oppdatere studentinfoen din: http://"+config.website+"/studentupdate/"+username+"?token="+token,
+                  text:"Følg denne lenken for å oppdatere studentinfoen din: http://"+config.website+"/studentupdate/?username="+username+"&token="+token,
                 };
 
                 sendEmail(options)

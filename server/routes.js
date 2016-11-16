@@ -15,16 +15,30 @@ function setup(app, handlers) {
       next();
     }
   });
+  //Studies
+  app.get('/studies/', handlers.studies.studies);
+  //lockers
   app.get('/lockers/:semester', handlers.lockers.lockers);
+  //users
   app.post('/users/',handlers.users.login);
+  //events
   app.get('/events/', handlers.events.events);
+  //students
   app.post('/students/', handlers.students.new);
   app.post('/students/:username/updateCode/', handlers.students.updateCode);
   app.put('/students/:username/update', handlers.students.update);
   app.put('/students/:username', handlers.students.verify);
-  app.use(handlers.users.token);
-  app.get('/students/', handlers.students.requestStudents);
+  //members
+  app.post('/members/', handlers.members.newMember);
 
+  //LOGGED IN
+  app.use(handlers.users.token);
+  //students
+  app.get('/students/', handlers.students.requestStudents);
+  //members
+  app.get('/members/', handlers.members.listMembers);
+  app.put('/members/', handlers.members.verifyPayment);
+  app.delete('/members', handlers.members.removeMember);
 }
 
 exports.setup = setup;
