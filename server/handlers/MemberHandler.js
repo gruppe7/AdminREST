@@ -128,7 +128,7 @@ function verifyPaymentRequest(req, res){
     return;
   }
 
-  var memberId=req.body.memberId||null;
+  var memberId=req.params.memberId||null;
 
   if(memberId==null){
     res.json(400, {error:'MemberId not submitted'});

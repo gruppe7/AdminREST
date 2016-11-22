@@ -26,7 +26,7 @@ function setup(app, handlers) {
   //students
   app.post('/students/', handlers.students.new);
   app.post('/students/:username/updateCode/', handlers.students.updateCode);
-  app.put('/students/:username/update', handlers.students.update);
+  app.put('/students/:username/update/', handlers.students.update);
   app.put('/students/:username', handlers.students.verify);
   //members
   app.post('/members/', handlers.members.newMember);
@@ -37,8 +37,11 @@ function setup(app, handlers) {
   app.get('/students/', handlers.students.requestStudents);
   //members
   app.get('/members/', handlers.members.listMembers);
-  app.put('/members/', handlers.members.verifyPayment);
+  app.put('/members/:memberId', handlers.members.verifyPayment);
   app.delete('/members', handlers.members.removeMember);
+  //events
+  app.get('/event/:eventId', handlers.events.event);
+
 }
 
 exports.setup = setup;
