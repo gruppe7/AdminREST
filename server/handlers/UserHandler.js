@@ -37,7 +37,7 @@ function handleLoginRequest(req, res){
               var eventmanager=rows[0].eventmanager;
               var token = jwt.sign({employee, eventmanager}, config.secret);
               console.log({employee, eventmanager, token});
-              res.json(201, {employee, eventmanager, token});
+              res.json(200, {employee, eventmanager, token});
               return;
             }
           }

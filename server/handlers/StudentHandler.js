@@ -109,8 +109,8 @@ function newStudentRequest(req, res){
 }
 function verifyStudentRequest(req, res){
   var username = req.params.username || null;
-  var token = req.query.token || null;
-
+  var token = req.body.token || null;
+  //console.log(req.params);
   if(username==null || token==null){
     res.json(400, {error:'username or token missing'});
     return;
