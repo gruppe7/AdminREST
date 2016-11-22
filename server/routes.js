@@ -38,7 +38,7 @@ function setup(app, handlers) {
   //members
   app.get('/members/', handlers.members.listMembers);
   app.put('/members/:memberId', handlers.members.verifyPayment);
-  app.delete('/members', handlers.members.removeMember);
+  app.delete('/members/:memberId', handlers.members.removeMember);
   //events
   app.get('/event/:eventId', handlers.events.event);
 

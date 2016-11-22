@@ -173,14 +173,14 @@ function removeMemberRequest(req, res){
     return;
   }
 
-  var memberId=req.body.memberId||null;
+  var memberId=req.params.memberId||null;
 
   if(memberId==null){
     res.json(400, {error:'MemberId not submitted'});
     return;
   }
 
-  if(memberId!==parseInt(memberId, 10)){
+  if(isNaN(memberId)){
     res.json(400, {error:'MemberId not formatted correctly'});
     return;
   }
