@@ -135,7 +135,7 @@ function verifyPaymentRequest(req, res){
     return;
   }
 
-  if(!isNaN(memberId)){
+  if(isNaN(memberId)){
     res.json(400, {error:'MemberId not formatted correctly'});
     return;
   }
