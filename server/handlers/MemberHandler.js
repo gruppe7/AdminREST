@@ -5,7 +5,6 @@ var input = require('../utils/input.js');
 
 var mailer = require('nodemailer-promise');
 var sendEmail= mailer.config(config.mailer);
-
 var pool = mysql.createPool(config.db.mysql);
 
 var salt = bcrypt.genSaltSync(10);
