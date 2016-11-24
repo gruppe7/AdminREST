@@ -83,22 +83,32 @@ function newStudentRequest(req, res){
                 sendEmail(options)
                   .then(function(info){
                     res.json(201, {username, firstname, lastname, studentCardId, year, studyId});
+                    connection.destroy();
+                    return;
                   })
                   .catch(function(err){
                     console.log(err);
                     res.json(500, {error:'Student registered, but mail failed to send'});
+                    connection.destroy();
+                    return;
                   });
               },
               function(err){
                 res.json(500, {error:'error while registering student'});
+                connection.destroy();
+                return;
               }
             )
           }else{
             res.json(400, {error:'student or card is already registered'});
+            connection.destroy();
+            return;
           }
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student'});
+          connection.destroy();
+          return;
         }
       );
     },
@@ -136,19 +146,27 @@ function verifyStudentRequest(req, res){
               connection.query(sql).then(
                 function (rows){
                   res.json(201, {success:'student verified'});
+                  connection.destroy();
+                  return;
                 },
                 function(err){
-                  res.json(500, {error:'something went wrong while getting db connection'});
+                  res.json(500, {error:'something went wrong while updating student'});
+                  connection.destroy();
+                  return;
                 }
               )
             }else{
               res.json(400, {error:'token wrong'});
+              connection.destroy();
+              return;
             }
 
           }
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student'});
+          connection.destroy();
+          return;
         }
       );
     },
@@ -176,6 +194,8 @@ function requestUpdateCode(req, res){
         function (rows){
           if(rows.length==0){
             res.json(400, {error:'username wrong or student not verified'});
+            connection.destroy();
+            return;
           }else{
             var token=tokens(16);
 
@@ -195,20 +215,28 @@ function requestUpdateCode(req, res){
                 sendEmail(options)
                   .then(function(info){
                     res.json(201, {success:'Token saved, and update email sent'});
+                    connection.destroy();
+                    return;
                   })
                   .catch(function(err){
                     console.log(err);
                     res.json(500, {error:'Token created, but mail failed to send'});
+                    connection.destroy();
+                    return;
                   });
               },
               function(err){
-                res.json(500, {error:'something went wrong while getting db connection'});
+                res.json(500, {error:'something went wrong while updating student'});
+                connection.destroy();
+                return;
               }
             )
           }
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student'});
+          connection.destroy();
+          return;
         }
       )
     },
@@ -264,6 +292,8 @@ function updateInfo(req, res){
         function (rows){
           if(rows.length==0){
             res.json(400, {error:'username wrong or student not verified'});
+            connection.destroy();
+            return;
           }else if(rows.length==1){
             if(rows[0].username==username){
               console.log(rows[0].updateStudentCode + " "+ token);
@@ -285,26 +315,40 @@ function updateInfo(req, res){
                   function (rows){
                     if(studentCardId!=null){
                       res.json(201, {username, year, studyId, studentCardId});
+                      connection.destroy();
+                      return;
                     }else{
                       res.json(201, {username, year, studyId});
+                      connection.destroy();
+                      return;
                     }
                   },
                   function(err){
                     res.json(500, {error:'something went wrong while updating student'});
+                    connection.destroy();
+                    return;
                   }
                 )
               }else{
                 res.json(400, {error:'token not correct'});
+                connection.destroy();
+                return;
               }
             }else{
               res.json(400, {error:'username doesnt exist'});
+              connection.destroy();
+              return;
             }
           }else{
             res.json(400, {error:'studentcard already registered'});
+            connection.destroy();
+            return;
           }
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student info'});
+          connection.destroy();
+          return;
         }
       )
     },
@@ -323,9 +367,13 @@ function requestStudents(req, res){
         connection.query(sql).then(
           function (rows){
             res.json(200, rows);
+            connection.destroy();
+            return;
           },
           function (err){
-            res.json(500, {error:'something went wrong while getting db connection'});
+            res.json(500, {error:'something went wrong while getting students'});
+            connection.destroy();
+            return;
           }
         )
       },

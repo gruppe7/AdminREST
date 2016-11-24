@@ -6,10 +6,6 @@ var bodyParser = require('body-parser')
 var https = require('https');
 var http =require('http');
 
-var mysql = require('mysql');
-
-var pool = mysql.createPool(config.db.mysql);
-
 var bcrypt = require('bcrypt');
 
 var salt = bcrypt.genSaltSync(10);

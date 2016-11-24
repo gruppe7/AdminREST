@@ -38,13 +38,18 @@ function handleLoginRequest(req, res){
               var token = jwt.sign({employee, eventmanager}, config.secret);
               console.log({employee, eventmanager, token});
               res.json(200, {employee, eventmanager, token});
+              connection.destroy();
               return;
             }
           }
           res.json(400, {error:'user does not exist or password is wrong'});
+          connection.destroy();
+          return;
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student from database'});
+          connection.destroy();
+          return;
         }
       )
     },

@@ -24,10 +24,13 @@ function handleStudiesRequest(req, res){
         function (rows){
           console.log(rows);
           res.json(200, rows);
+          connection.destroy();
           return;
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting studies from database'});
+          connection.destroy();
+          return;
         }
       )
     },

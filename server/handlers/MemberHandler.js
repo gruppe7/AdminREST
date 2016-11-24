@@ -6,6 +6,8 @@ var input = require('../utils/input.js');
 var mailer = require('nodemailer-promise');
 var sendEmail= mailer.config(config.mailer);
 
+var db=require('../db.js');
+
 var pool = mysql.createPool(config.db.mysql);
 
 var salt = bcrypt.genSaltSync(10);
@@ -52,12 +54,11 @@ function newMemberRequest(req, res){
           if(rows.length==0){
             res.json(400, {error:'Student does not exist, or isnt verified'});
           }else{
-            console.log(rows);
-
             if(rows.length>=1){
               for(i=0;i<rows.length;i++){
                 if(rows[i].year==year){
                   res.json(400, {error:'Member already registered'});
+                  connection.destroy();
                   return;
                 }
               }
@@ -75,15 +76,21 @@ function newMemberRequest(req, res){
             connection.query(sql).then(
               function (rows){
                 res.json(201, {sucess:'Member registered'});
+                connection.destroy();
+                return;
               },
               function(err){
                 res.json(500, {error:'error while registering member'});
+                connection.destroy();
+                return;
               }
             )
           }
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting student info'});
+          connection.destroy();
+          return;
         }
       );
     },
@@ -109,10 +116,13 @@ function handleMembersRequest(req, res){
         function (rows){
           console.log(rows);
           res.json(200, rows);
+          connection.destroy();
           return;
         },
         function (err){
           res.json(500, {error:'something went wrong while getting members from db'});
+          connection.destroy();
+          return;
         }
       )
     },
@@ -135,7 +145,7 @@ function verifyPaymentRequest(req, res){
     return;
   }
 
-  if(memberId!==parseInt(memberId, 10)){
+  if(isNaN(memberId)){
     res.json(400, {error:'MemberId not formatted correctly'});
     return;
   }
@@ -152,13 +162,19 @@ function verifyPaymentRequest(req, res){
           console.log(rows);
           if(rows.affectedRows==1){
             res.json(201, {sucess:'Payment registered'});
+            connection.destroy();
+            return;
           }else{
             res.json(400, {error:'Members payment already registered'});
+            connection.destroy();
+            return;
           }
           return;
         },
         function (err){
           res.json(500, {error:'something went wrong while updating payment info'});
+          connection.destroy();
+          return;
         }
       )
     },
@@ -173,14 +189,14 @@ function removeMemberRequest(req, res){
     return;
   }
 
-  var memberId=req.body.memberId||null;
+  var memberId=req.params.memberId||null;
 
   if(memberId==null){
     res.json(400, {error:'MemberId not submitted'});
     return;
   }
 
-  if(memberId!==parseInt(memberId, 10)){
+  if(isNaN(memberId)){
     res.json(400, {error:'MemberId not formatted correctly'});
     return;
   }
@@ -194,7 +210,6 @@ function removeMemberRequest(req, res){
     function (connection){
       connection.query(sql).then(
         function (rows){
-          console.log(rows);
 
           if(rows.length==1){
             var username=rows[0].username;
@@ -216,23 +231,32 @@ function removeMemberRequest(req, res){
                 sendEmail(options)
                   .then(function(info){
                     res.json(201, {success:'Membership deleted'});
+                    connection.destroy();
+                    return;
                   })
                   .catch(function(err){
-                    console.log(err);
                     res.json(500, {error:'Membership deleted, but mail failed to send'});
+                    connection.destroy();
+                    return;
                   });
               },
               function (err){
                 res.json(500, {error:'something went wrong while deleting membership'});
+                connection.destroy();
+                return;
               }
             );
 
           }else{
             res.json(400, {error:'MemberId does not exist in db'});
+            connection.destroy();
+            return;
           }
         },
         function (err){
           res.json(500, {error:'something went wrong while updating payment info'});
+          connection.destroy();
+          return;
         }
       )
     },

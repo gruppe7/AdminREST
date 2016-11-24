@@ -21,10 +21,12 @@ function handleEventsRequest(req, res){
       connection.query(sql).then(
         function (rows){
           res.json(200, rows);
+          connection.destroy();
           return;
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting events'});
+          connection.destroy();
         }
       )
     },
@@ -69,15 +71,19 @@ function handleEventRequest(req, res){
               }
 
               res.json(200, {event, participants});
+              connection.destroy();
               return;
 
             }else{
               res.json(400, {error:'Event does not exist'});
+              connection.destroy();
+              return;
             }
 
           },
           function (err){
             res.json(500, {error:'something went wrong while getting event'});
+            connection.destroy();
           }
         )
       },
@@ -103,9 +109,41 @@ function createEventRequest(req, res){
       res.json(400, {error:'Name, description, date, participants or dinner participants not provided.'});
       return;
     }
+    if(isNaN(participants)||isNaN(dinnerParticipants)){
+      res.json(400, {error:'Participants and dinner participants need to be formatted as numbers'});
+      return;
+    }
+    if(dinnerParticipants>participants){
+      res.json(400, {error:'Cannot have more participants on dinner than event.'});
+      return;
+    }
 
+    var sql = "insert into Events (name, description, date, participants, dinnerParticipants) values (?,?,?,?,?)";
 
+    var inserts=[name, description, date, participants, dinnerParticipants];
+    sql=mysql.format(sql, inserts);
 
+    pool.getConnection().then(
+      function (connection){
+        connection.query(sql).then(
+          function (rows){
+
+            res.json(200, {rows});
+            connection.destroy();
+            return;
+
+          },
+          function (err){
+            res.json(500, {error:'something went wrong while creating event'});
+            connection.destroy();
+            return;
+          }
+        )
+      },
+      function (err){
+        res.json(500, {error:'could not connect to database'});
+      }
+    );
 
 
   }
