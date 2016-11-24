@@ -31,10 +31,12 @@ function handleLockersRequest(req, res){
         function (rows){
           console.log(rows);
           res.json(200, rows);
+          connection.destroy();
           return;
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting lockers'});
+          connection.destroy();
         }
       )
     },
@@ -81,9 +83,13 @@ function reserveLockerRequest(req, res){
         function (rows){
           if(rows.length==0){
             res.json(400, {error:'locker does not exist'});
+            connection.destroy();
+            return;
           }else{
             if(rows[0].taken!=0){
               res.json(400, {error:'locker already reserved'});
+              connection.destroy();
+              return;
             }else{
               sql="SELECT Students.*, count(sub.lockerId) as rentedLockers FROM Students left join (select * from LockerRent where semester=?) as sub on Students.username=sub.username where Students.username=?";
               inserts=[semester, username];
@@ -98,22 +104,26 @@ function reserveLockerRequest(req, res){
               connection.query(sql).then(
                 function (rows){
                   res.json(201, {success:'locker reserved successfully', lockerId, username, semester});
+                  connection.destroy();
+                  return;
                 },
                 function(err){
                   res.json(400, {error:'wrong username'});
+                  connection.destroy();
+                  return;
                 }
               )
             }
           }
 
-
-
-          console.log(rows);
           res.json(200, rows);
+          connection.destroy();
           return;
         },
         function (err){
-          res.json(500, {error:'something went wrong while getting db connection'});
+          res.json(500, {error:'something went wrong while getting lockers'});
+          connection.destroy();
+          return;
         })
     },
     function (err){
