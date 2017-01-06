@@ -23,6 +23,8 @@ function setup(app, handlers) {
   app.post('/users/',handlers.users.login);
   //events
   app.get('/events/', handlers.events.events);
+  app.post('/event/:eventId/joinEvent', handlers.events.joinEvent);
+  app.delete('/event/:eventId/removeParticipantion', handlers.events.removeParticipantion);
   //students
   app.post('/students/', handlers.students.new);
   app.post('/students/:username/updateCode/', handlers.students.updateCode);
@@ -41,6 +43,9 @@ function setup(app, handlers) {
   app.delete('/members/:memberId', handlers.members.removeMember);
   //events
   app.get('/event/:eventId', handlers.events.event);
+  app.post('/event/', handlers.events.newEvent);
+  app.post('/event/:eventId/joinEventLoggedIn', handlers.events.joinEventLoggedIn);
+  app.put('/event/:eventId/registerAttendance', handlers.events.registerAttendance);
 
 }
 
