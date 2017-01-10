@@ -8,7 +8,7 @@ npm install
 2. Create a config-release.js file in server folder:
 ```sh
 module.exports = {
-  "secret”:’’, //string for building log in tokens
+  "secret”:’’, //string for building tokens in login
   "db": {
     "connectionLimit":10,
 		"mysql": “”  //url for mysql server, with db username and password
